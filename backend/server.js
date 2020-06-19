@@ -25,6 +25,15 @@ app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "../frontend/html/index.html"));
 });
 
+app.get("/api/blogs/author/:id", (req, res) => {
+	const reg = new RegExp(`^${req.params.id}$`, "i");
+
+	Blog.find({ author: reg }).then((result) => {
+		console.log(result);
+		res.json(result);
+	});
+});
+
 app.get("/api/blogs", (req, res) => {
 	Blog.find().then((result) => {
 		console.log(result);

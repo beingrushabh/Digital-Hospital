@@ -2,8 +2,9 @@ const path = require("path");
 const express = require("express");
 const app = express();
 
+const BlogsApi = require("./routes/blogs");
+
 const mongoose = require("mongoose");
-const Blog = require("./models/blogs");
 
 const morgan = require("morgan");
 
@@ -21,39 +22,10 @@ app.use(
 app.use(morgan("short"));
 app.use(express.static(path.join(__dirname, "../frontend")));
 
+app.use("/api/blogs", BlogsApi);
+
 app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "../frontend/html/index.html"));
-});
-
-app.get("/api/blogs/author/:id", (req, res) => {
-	const reg = new RegExp(`^${req.params.id}$`, "i");
-
-	Blog.find({ author: reg }).then((result) => {
-		console.log(result);
-		res.json(result);
-	});
-});
-
-app.get("/api/blogs", (req, res) => {
-	Blog.find().then((result) => {
-		console.log(result);
-		res.json(result);
-	});
-});
-
-app.post("/api/blogs", (req, res) => {
-	const body = req.body;
-
-	if (!body.author || !body.title || !body.content) res.status(400).send("Wrong Format.");
-
-	new Blog({
-		title: body.title,
-		content: body.content,
-		date: new Date().toISOString(),
-		author: body.author,
-	}).save();
-
-	res.send(body);
 });
 
 mongoose
